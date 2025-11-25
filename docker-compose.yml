@@ -33,8 +33,6 @@ services:
       - apex
     volumes:
       - config_data:/data
-    networks:
-      - apex
 
 
 
