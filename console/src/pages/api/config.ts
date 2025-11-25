@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Forward Authorization header if present
     if (req.headers.authorization) {
-      headers['Authorization'] = req.headers.authorization;
+      headers['authorization'] = req.headers.authorization;
     }
 
     const response = await fetch(url, {
