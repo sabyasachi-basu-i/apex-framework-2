@@ -97,10 +97,10 @@ services:
       - "3000:3000"
     environment:
       - PORT=3000
-      - NEXT_PUBLIC_INTELLIGENCE_URL=http://localhost:8001
-      - NEXT_PUBLIC_INTEGRATION_URL=http://localhost:8002
-      - NEXT_PUBLIC_ORCHESTRATION_URL=http://localhost:8003
-      - NEXT_PUBLIC_GOVERNANCE_URL=http://localhost:8004
+      - NEXT_PUBLIC_INTELLIGENCE_URL=http://intelligence:8001
+      - NEXT_PUBLIC_INTEGRATION_URL=http://integration:8002
+      - NEXT_PUBLIC_ORCHESTRATION_URL=http://orchestration:8003
+      - NEXT_PUBLIC_GOVERNANCE_URL=http://governance:8004
       - NEXT_PUBLIC_CONFIG_PATH=/config
     depends_on:
       orchestration:
