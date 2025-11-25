@@ -4,6 +4,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from loguru import logger
 
+from apex_intelligence import vector_store  # noqa: F401
 from apex_intelligence.routes import health, memory, llm, config
 
 

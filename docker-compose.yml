@@ -1,44 +1,6 @@
 version: "3.9"
 
 services:
-  chromadb:
-    image: chromadb/chroma:latest
-    # The image entrypoint already invokes the `chroma` binary, so only pass
-    # the subcommand and options here to avoid "unrecognized subcommand" errors.
-    command: ["run", "--host", "0.0.0.0", "--port", "8000", "--path", "/data"]
-    environment:
-      - CHROMA_SERVER_HOST=0.0.0.0
-      - CHROMA_SERVER_HTTP_PORT=8000
-    ports:
-      - "8000:8000"
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - >-
-          python3 - <<'PY'
-          import sys
-          from urllib.request import urlopen
-
-          try:
-              response = urlopen('http://localhost:8000/api/v1/heartbeat')
-              sys.exit(0 if response.status == 200 else 1)
-          except Exception:
-              sys.exit(1)
-          PY
-      start_period: 20s
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    networks:
-      - apex
-    volumes:
-      - config_data:/data
-    networks:
-      - apex
-
-
-
-
   intelligence:
     build: ./services/intelligence-service
     command: uvicorn main:app --host 0.0.0.0 --port 8001
@@ -48,11 +10,7 @@ services:
       - APEX_ENV=production
       - APEX_SQL_CONNECTION_STRING=${APEX_SQL_CONNECTION_STRING}
       - CONFIG_PATH=/data/config.json
-      - CHROMADB_HOST=http://chromadb:8000
       - JWT_SECRET=${APEX_SECRET_KEY:-change-me}
-    depends_on:
-      chromadb:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
       interval: 30s
@@ -124,9 +82,6 @@ services:
       - APEX_SECRET_KEY=${APEX_SECRET_KEY:-change-me}
       - CONFIG_PATH=/data/config.json
       - JWT_SECRET=${APEX_SECRET_KEY:-change-me}
-    depends_on:
-      chromadb:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
       interval: 30s

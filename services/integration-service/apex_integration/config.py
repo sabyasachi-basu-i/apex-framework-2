@@ -11,8 +11,6 @@ from pydantic import BaseModel, Field
 DEFAULT_CONFIG: Dict[str, Any] = {
     "OPENAI_API_KEY": "",
     "MODEL_NAME": "gpt-4o-mini",
-    "CHROMADB_HOST": os.getenv("CHROMADB_HOST", "http://localhost:8000"),
-    "CHROMADB_COLLECTION": "apex-memory",
     "TEMPERATURE": 0.2,
     "MAX_RETRIES": 2,
     "SQL_CONNECTION_STRING": os.getenv("APEX_SQL_CONNECTION_STRING"),
@@ -22,8 +20,6 @@ DEFAULT_CONFIG: Dict[str, Any] = {
 class RuntimeConfig(BaseModel):
     OPENAI_API_KEY: str = Field(default="")
     MODEL_NAME: str = Field(default="gpt-4o-mini")
-    CHROMADB_HOST: str = Field(default="http://localhost:8000")
-    CHROMADB_COLLECTION: str = Field(default="apex-memory")
     TEMPERATURE: float = Field(default=0.2)
     MAX_RETRIES: int = Field(default=2)
     SQL_CONNECTION_STRING: str | None = Field(default=None)
