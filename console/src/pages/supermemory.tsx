@@ -3,7 +3,7 @@ import { Layout } from '../components/Layout';
 import { PageHeader, SectionCard, DataTable, LoadingSkeleton, APIError } from '../components/ui';
 import { apiFetch } from '../lib/api';
 
-const MEMORY_BASE = `${process.env.NEXT_PUBLIC_INTELLIGENCE_URL || ''}/memory`;
+const MEMORY_BASE = '/memory';
 
 type MemoryEntry = { id: string; content: string; space_id: string };
 
