@@ -1,10 +1,19 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { path } = req.query;
-  const pathStr = Array.isArray(path) ? path.join('/') : path;
+  const { path, ...queryParams } = req.query;
+  const pathStr = Array.isArray(path) ? path.join('/') : (path || '');
   const intelligenceBase = process.env.NEXT_PUBLIC_INTELLIGENCE_URL || 'http://localhost:8001';
-  const url = `${intelligenceBase}/memory/${pathStr}`;
+
+  // Build URL with query parameters
+  const baseUrl = `${intelligenceBase}/memory/${pathStr}`;
+  const queryString = new URLSearchParams(
+    Object.entries(queryParams).reduce((acc, [key, value]) => {
+      acc[key] = Array.isArray(value) ? value.join(',') : String(value);
+      return acc;
+    }, {} as Record<string, string>)
+  ).toString();
+  const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
 
   try {
     const headers: HeadersInit = {
@@ -13,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Forward Authorization header if present
     if (req.headers.authorization) {
-      headers['Authorization'] = req.headers.authorization;
+      headers['authorization'] = req.headers.authorization;
     }
 
     const response = await fetch(url, {
