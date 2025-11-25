@@ -27,7 +27,7 @@ jobs:
       - name: Lint with Ruff
         run: |
           pip install ruff
-          ruff services
+          ruff check services
   node:
     runs-on: ubuntu-latest
     steps:
