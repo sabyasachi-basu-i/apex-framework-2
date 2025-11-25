@@ -1,6 +1,6 @@
 """Pydantic models used by the intelligence service."""
 
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel, Field
 
 
@@ -50,3 +50,36 @@ class CompletionResponse(BaseModel):
     """LLM completion response."""
 
     completion: str
+
+
+class MemoryEntry(BaseModel):
+    """Represents a supermemory record."""
+
+    id: str
+    content: str
+    space_id: str
+    metadata: Optional[dict] = None
+
+
+class MemoryAddRequest(BaseModel):
+    content: str
+    space_id: str = Field(default="default")
+    metadata: Optional[dict] = None
+
+
+class MemoryListResponse(BaseModel):
+    items: List[MemoryEntry]
+
+
+class MemorySearchResponse(BaseModel):
+    query: str
+    results: List[MemoryEntry]
+
+
+class ConfigResponse(BaseModel):
+    OPENAI_API_KEY: str = ""
+    MODEL_NAME: str = ""
+    CHROMADB_HOST: str = ""
+    CHROMADB_COLLECTION: str = ""
+    TEMPERATURE: float = 0.0
+    MAX_RETRIES: int = 0

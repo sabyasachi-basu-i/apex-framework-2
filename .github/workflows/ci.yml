@@ -27,9 +27,10 @@ jobs:
       - name: Lint with Ruff
         run: |
           pip install ruff
-          ruff services
+          ruff check services
   node:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node.js
@@ -39,5 +40,5 @@ jobs:
       - name: Install dependencies and lint
         run: |
           cd console
-          npm install
-          npx eslint . --ext .js,.ts,.tsx || true
+          npm install --legacy-peer-deps --no-audit --no-fund --progress=false --prefer-offline
+          npm run lint -- --max-warnings=0
