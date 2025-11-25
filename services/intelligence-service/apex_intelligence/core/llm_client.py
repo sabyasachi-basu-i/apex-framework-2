@@ -1,11 +1,9 @@
 """Pluggable LLM client.
 
-This is a minimal implementation that echoes the prompt back.  To integrate
+This is a minimal implementation that echoes the prompt back. To integrate
 with real providers, implement API calls here and use environment variables
 to configure keys and endpoints.
 """
-
-from typing import Optional
 
 
 class LLMClient:
@@ -26,6 +24,6 @@ class LLMClient:
         str
             A dummy completion
         """
-        # This stub just returns the prompt with a canned suffix.  Replace
+        # This stub just returns the prompt with a canned suffix. Replace
         # this method with calls to OpenAI, Azure OpenAI, Anthropic, etc.
         return f"[LLM]: You said '{prompt}'. This is a stub response."

@@ -1,10 +1,12 @@
 """HTTP endpoints for executing connector operations."""
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
 from typing import Any, Dict
 
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field
+
 from apex_integration.connectors import CONNECTOR_TYPES
+from apex_integration.security import get_current_user
 
 router = APIRouter()
 
@@ -20,8 +22,7 @@ class ExecuteResponse(BaseModel):
 
 
 @router.post("/execute", response_model=ExecuteResponse)
-async def execute_operation(req: ExecuteRequest) -> ExecuteResponse:
-    """Instantiate the requested connector type and execute the operation."""
+async def execute_operation(req: ExecuteRequest, _user: str = Depends(get_current_user)) -> ExecuteResponse:
     connector_cls = CONNECTOR_TYPES.get(req.connector_type)
     if not connector_cls:
         raise HTTPException(status_code=400, detail=f"Unsupported connector type '{req.connector_type}'")
@@ -29,6 +30,6 @@ async def execute_operation(req: ExecuteRequest) -> ExecuteResponse:
     connector = connector_cls()
     try:
         result = await connector.execute(req.operation, req.payload)
-    except Exception as err:
+    except Exception as err:  # noqa: BLE001
         raise HTTPException(status_code=500, detail=str(err))
     return ExecuteResponse(result=result)
