@@ -1,21 +1,28 @@
-"""Entry point for the intelligence service.
+"""Entry point for the intelligence service."""
 
-This service exposes memory ingestion and querying, as well as a placeholder LLM
-completion endpoint.  It is implemented using FastAPI and can be run
-standalone or via Docker Compose.
-"""
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+from loguru import logger
 
-from fastapi import FastAPI
-from apex_intelligence.routes import health, memory, llm
+from apex_intelligence.routes import health, memory, llm, config
 
 
 def create_app() -> FastAPI:
-    """Create and configure the FastAPI application."""
-    app = FastAPI(title="APEX Intelligence Service", version="0.1.0")
-    # mount routers
+    app = FastAPI(title="APEX Intelligence Service", version="0.2.0")
+
+    @app.middleware("http")
+    async def error_handler(request: Request, call_next):
+        try:
+            response = await call_next(request)
+            return response
+        except Exception as exc:  # noqa: BLE001
+            logger.exception("Unhandled error during request")
+            return JSONResponse(status_code=500, content={"detail": str(exc)})
+
     app.include_router(health.router, prefix="/health", tags=["health"])
     app.include_router(memory.router, prefix="/memory", tags=["memory"])
     app.include_router(llm.router, prefix="/llm", tags=["llm"])
+    app.include_router(config.router, prefix="/config", tags=["config"])
     return app
 
 

@@ -1,8 +1,12 @@
 """Health endpoints for integration service."""
-
 from fastapi import APIRouter
 
 router = APIRouter()
+
+
+@router.get("/")
+async def health_root() -> dict:
+    return {"status": "healthy"}
 
 
 @router.get("/live")
