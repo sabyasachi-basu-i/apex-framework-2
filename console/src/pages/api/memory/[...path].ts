@@ -21,9 +21,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     };
 
     // Forward Authorization header if present
-    if (req.headers.authorization) {
-      headers['authorization'] = req.headers.authorization;
+    const authHeader = req.headers.authorization;
+    console.log('[Memory API Proxy] Incoming authorization header:', authHeader ? 'Present' : 'Missing');
+    console.log('[Memory API Proxy] All headers:', Object.keys(req.headers));
+
+    if (authHeader) {
+      headers['authorization'] = authHeader;
     }
+
+    console.log('[Memory API Proxy] Forwarding to:', url);
+    console.log('[Memory API Proxy] Forwarding headers:', headers);
 
     const response = await fetch(url, {
       method: req.method,
@@ -31,9 +38,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
     });
 
+    console.log('[Memory API Proxy] Response status:', response.status);
+
     const data = await response.json();
     res.status(response.status).json(data);
   } catch (error) {
+    console.error('[Memory API Proxy] Error:', error);
     res.status(500).json({ detail: 'Proxy error', error: String(error) });
   }
 }
