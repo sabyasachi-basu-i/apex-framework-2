@@ -5,11 +5,10 @@ from __future__ import annotations
 import uuid
 from typing import Any, Dict, List, Optional
 
-from chromadb import Client
-from chromadb.config import Settings
+from chromadb import PersistentClient
 
 
-client = Client(Settings(chroma_db_impl="duckdb+parquet", persist_directory="/data/chroma"))
+client = PersistentClient(path="/data/chroma")
 collection = client.get_or_create_collection("apex_memory")
 
 
