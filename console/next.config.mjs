@@ -25,6 +25,10 @@ const nextConfig = {
         destination: `${governanceBase}/governance/:path*`,
       },
       {
+        source: '/auth/:path*',
+        destination: `${governanceBase}/auth/:path*`,
+      },
+      {
         source: '/config',
         destination: `${governanceBase}/config`,
       },

@@ -3,7 +3,7 @@ import { Layout } from '../components/Layout';
 import { PageHeader, SectionCard, LoadingSkeleton } from '../components/ui';
 import { apiFetch } from '../lib/api';
 
-const CHAT_URL = `${process.env.NEXT_PUBLIC_ORCHESTRATION_URL || ''}/orchestration/chat`;
+const CHAT_URL = '/orchestration/chat';
 
 type Message = { role: 'user' | 'assistant'; content: string; timestamp: string };
 

@@ -3,7 +3,7 @@ import { Layout } from '../components/Layout';
 import { PageHeader, SectionCard, LoadingSkeleton, APIError } from '../components/ui';
 import { apiFetch } from '../lib/api';
 
-const GOV_BASE = `${process.env.NEXT_PUBLIC_GOVERNANCE_URL || ''}/governance`;
+const GOV_BASE = '/governance';
 
 type Graph = { name: string; nodes: { id: string; label: string }[]; edges: { source: string; target: string }[] };
 

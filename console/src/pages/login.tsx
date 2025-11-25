@@ -3,7 +3,7 @@ import { Layout } from '../components/Layout';
 import { PageHeader, SectionCard, APIError } from '../components/ui';
 import { apiFetch } from '../lib/api';
 
-const LOGIN_URL = `${process.env.NEXT_PUBLIC_GOVERNANCE_URL || ''}/auth/login`;
+const LOGIN_URL = '/auth/login';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('admin@apex.local');
