@@ -1,65 +1,56 @@
-"""Simple in‑memory memory store.
-
-This memory store holds documents in a dictionary keyed by space ID.  Each
-document has an ID and content.  Queries perform a naive similarity search
-using Jaccard similarity between sets of lowercase tokens.
-
-For production use, consider integrating with a real vector database such
-as Chroma, Pinecone, Weaviate or a graph database.
-"""
-
+"""Simple in-memory memory store with search capabilities."""
 from __future__ import annotations
 
-import uuid
 import re
+import uuid
 from typing import Dict, List, Tuple
 
-from apex_intelligence.models import QueryResult
+from apex_intelligence.models import MemoryEntry
 
 
 class MemoryStore:
-    """A simple in‑memory store mapping space IDs to lists of documents."""
+    """A simple in-memory store mapping space IDs to lists of documents."""
 
     def __init__(self) -> None:
-        # maps space_id -> list of (doc_id, content)
-        self._spaces: Dict[str, List[Tuple[str, str]]] = {}
+        self._spaces: Dict[str, List[Tuple[str, str, dict | None]]] = {}
 
-    async def ingest(self, space_id: str, content: str) -> str:
-        """Insert a document into a space and return its generated ID."""
+    async def ingest(self, space_id: str, content: str, metadata: dict | None = None) -> str:
         docs = self._spaces.setdefault(space_id, [])
         doc_id = str(uuid.uuid4())
-        docs.append((doc_id, content))
+        docs.append((doc_id, content, metadata))
         return doc_id
 
-    async def query(self, space_id: str, query: str, top_k: int = 5) -> List[QueryResult]:
-        """Return top_k documents most similar to the query.
+    async def delete(self, doc_id: str) -> bool:
+        for space_id, docs in self._spaces.items():
+            for idx, (existing_id, _, _) in enumerate(docs):
+                if existing_id == doc_id:
+                    docs.pop(idx)
+                    return True
+        return False
 
-        Similarity is measured by Jaccard similarity of token sets.  Raises
-        ValueError if the space does not exist.
-        """
+    async def list(self, space_id: str | None = None) -> List[MemoryEntry]:
+        entries: List[MemoryEntry] = []
+        for current_space, docs in self._spaces.items():
+            if space_id and current_space != space_id:
+                continue
+            for doc_id, content, metadata in docs:
+                entries.append(MemoryEntry(id=doc_id, content=content, space_id=current_space, metadata=metadata))
+        return entries
+
+    async def query(self, space_id: str, query: str, top_k: int = 5) -> List[MemoryEntry]:
         if space_id not in self._spaces:
-            raise ValueError(f"Space '{space_id}' not found")
-        docs = self._spaces[space_id]
-        if not docs:
             return []
-
+        docs = self._spaces[space_id]
         query_tokens = self._tokenise(query)
-
-        scored: List[Tuple[str, float, str]] = []
-        for doc_id, content in docs:
+        scored: List[Tuple[str, float, str, dict | None]] = []
+        for doc_id, content, metadata in docs:
             doc_tokens = self._tokenise(content)
             score = self._jaccard(query_tokens, doc_tokens)
-            scored.append((doc_id, score, content))
-
-        # sort by descending score
+            scored.append((doc_id, score, content, metadata))
         scored.sort(key=lambda x: x[1], reverse=True)
-        results: List[QueryResult] = []
-        for doc_id, score, content in scored[:top_k]:
-            results.append(QueryResult(doc_id=doc_id, score=score, content=content))
-        return results
+        return [MemoryEntry(id=doc_id, content=content, space_id=space_id, metadata=metadata) for doc_id, _, content, metadata in scored[:top_k]]
 
     def _tokenise(self, text: str) -> set[str]:
-        # simple whitespace and punctuation splitting, lowercasing
         tokens = re.split(r"\W+", text.lower())
         return set(filter(None, tokens))
 
