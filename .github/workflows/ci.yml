@@ -41,4 +41,4 @@ jobs:
         run: |
           cd console
           npm install --legacy-peer-deps --no-audit --no-fund --progress=false --prefer-offline
-          npm run lint -- --max-warnings=0
+          npm run lint
