@@ -1,6 +1,20 @@
 version: "3.9"
 
 services:
+  chromadb:
+    image: chromadb/chroma:latest
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - apex
+    volumes:
+      - config_data:/data
+
   intelligence:
     build: ./services/intelligence-service
     command: uvicorn main:app --host 0.0.0.0 --port 8001
@@ -9,6 +23,21 @@ services:
     environment:
       - APEX_ENV=production
       - APEX_SQL_CONNECTION_STRING=${APEX_SQL_CONNECTION_STRING}
+      - CONFIG_PATH=/data/config.json
+      - CHROMADB_HOST=http://chromadb:8000
+      - JWT_SECRET=${APEX_SECRET_KEY:-change-me}
+    depends_on:
+      chromadb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - apex
+    volumes:
+      - config_data:/data
 
   integration:
     build: ./services/integration-service
@@ -18,6 +47,20 @@ services:
     environment:
       - APEX_ENV=production
       - APEX_SQL_CONNECTION_STRING=${APEX_SQL_CONNECTION_STRING}
+      - CONFIG_PATH=/data/config.json
+      - JWT_SECRET=${APEX_SECRET_KEY:-change-me}
+    depends_on:
+      intelligence:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - apex
+    volumes:
+      - config_data:/data
 
   orchestration:
     build: ./services/orchestration-service
@@ -28,6 +71,24 @@ services:
       - APEX_ENV=production
       - INTELLIGENCE_URL=http://intelligence:8001
       - INTEGRATION_URL=http://integration:8002
+      - CONFIG_PATH=/data/config.json
+      - JWT_SECRET=${APEX_SECRET_KEY:-change-me}
+    depends_on:
+      intelligence:
+        condition: service_healthy
+      integration:
+        condition: service_healthy
+      governance:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - apex
+    volumes:
+      - config_data:/data
 
   governance:
     build: ./services/governance-service
@@ -37,6 +98,20 @@ services:
     environment:
       - APEX_ENV=production
       - APEX_SECRET_KEY=${APEX_SECRET_KEY:-change-me}
+      - CONFIG_PATH=/data/config.json
+      - JWT_SECRET=${APEX_SECRET_KEY:-change-me}
+    depends_on:
+      chromadb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - apex
+    volumes:
+      - config_data:/data
 
   console:
     build: ./console
@@ -49,14 +124,20 @@ services:
       - NEXT_PUBLIC_INTEGRATION_URL=http://localhost:8002
       - NEXT_PUBLIC_ORCHESTRATION_URL=http://localhost:8003
       - NEXT_PUBLIC_GOVERNANCE_URL=http://localhost:8004
+      - NEXT_PUBLIC_CONFIG_PATH=/config
+    depends_on:
+      orchestration:
+        condition: service_healthy
+      governance:
+        condition: service_healthy
+    networks:
+      - apex
+    volumes:
+      - config_data:/data
 
-  # optional: add a postgres service if you want to persist data
-  # db:
-  #   image: postgres:15
-  #   restart: always
-  #   environment:
-  #     POSTGRES_USER: apex
-  #     POSTGRES_PASSWORD: apex
-  #     POSTGRES_DB: apex
-  #   ports:
-  #     - "5432:5432"
+networks:
+  apex:
+    driver: bridge
+
+volumes:
+  config_data:
