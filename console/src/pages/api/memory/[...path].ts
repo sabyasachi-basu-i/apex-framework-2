@@ -29,6 +29,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       headers['authorization'] = authHeader;
     }
 
+    // Forward Cookie header if present
+    const cookieHeader = req.headers.cookie;
+    console.log('[Memory API Proxy] Incoming cookie header:', cookieHeader ? 'Present' : 'Missing');
+
+    if (cookieHeader) {
+      headers['cookie'] = cookieHeader;
+    }
+
     console.log('[Memory API Proxy] Forwarding to:', url);
     console.log('[Memory API Proxy] Forwarding headers:', headers);
 
