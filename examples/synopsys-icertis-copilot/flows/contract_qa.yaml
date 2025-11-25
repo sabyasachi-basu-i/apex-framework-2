@@ -1,0 +1,18 @@
+id: contract_qa
+name: Contract Q&A
+description: |
+  Demonstration flow for querying contract data and summarising it.
+steps:
+  - id: fetch_contract
+    type: connector_call
+    connector: sql
+    operation: query
+    payload:
+      query: "SELECT * FROM contracts WHERE id = :id"
+      params:
+        id: 1
+  - id: summarise_contract
+    type: llm_call
+    space_id: contracts
+    prompt: "Provide a summary of the key terms in the contract."
+    top_k: 5

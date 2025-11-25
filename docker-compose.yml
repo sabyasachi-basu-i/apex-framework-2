@@ -1,0 +1,62 @@
+version: "3.9"
+
+services:
+  intelligence:
+    build: ./services/intelligence-service
+    command: uvicorn main:app --host 0.0.0.0 --port 8001
+    ports:
+      - "8001:8001"
+    environment:
+      - APEX_ENV=production
+      - APEX_SQL_CONNECTION_STRING=${APEX_SQL_CONNECTION_STRING}
+
+  integration:
+    build: ./services/integration-service
+    command: uvicorn main:app --host 0.0.0.0 --port 8002
+    ports:
+      - "8002:8002"
+    environment:
+      - APEX_ENV=production
+      - APEX_SQL_CONNECTION_STRING=${APEX_SQL_CONNECTION_STRING}
+
+  orchestration:
+    build: ./services/orchestration-service
+    command: uvicorn main:app --host 0.0.0.0 --port 8003
+    ports:
+      - "8003:8003"
+    environment:
+      - APEX_ENV=production
+      - INTELLIGENCE_URL=http://intelligence:8001
+      - INTEGRATION_URL=http://integration:8002
+
+  governance:
+    build: ./services/governance-service
+    command: uvicorn main:app --host 0.0.0.0 --port 8004
+    ports:
+      - "8004:8004"
+    environment:
+      - APEX_ENV=production
+      - APEX_SECRET_KEY=${APEX_SECRET_KEY:-change-me}
+
+  console:
+    build: ./console
+    command: npm run start
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NEXT_PUBLIC_INTELLIGENCE_URL=http://localhost:8001
+      - NEXT_PUBLIC_INTEGRATION_URL=http://localhost:8002
+      - NEXT_PUBLIC_ORCHESTRATION_URL=http://localhost:8003
+      - NEXT_PUBLIC_GOVERNANCE_URL=http://localhost:8004
+
+  # optional: add a postgres service if you want to persist data
+  # db:
+  #   image: postgres:15
+  #   restart: always
+  #   environment:
+  #     POSTGRES_USER: apex
+  #     POSTGRES_PASSWORD: apex
+  #     POSTGRES_DB: apex
+  #   ports:
+  #     - "5432:5432"

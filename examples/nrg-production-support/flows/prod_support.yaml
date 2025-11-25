@@ -1,0 +1,16 @@
+id: prod_support_triage
+name: NRG Production Support Triage
+description: |
+  Example flow that queries a SQL log table and summarises the results.
+steps:
+  - id: fetch_logs
+    type: connector_call
+    connector: sql
+    operation: query
+    payload:
+      query: "SELECT message FROM logs LIMIT 10"
+  - id: analyse
+    type: llm_call
+    space_id: prod-support
+    prompt: "Summarise the log messages."
+    top_k: 3

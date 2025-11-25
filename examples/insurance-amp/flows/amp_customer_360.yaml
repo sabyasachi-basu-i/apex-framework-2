@@ -1,0 +1,26 @@
+id: amp_customer_360
+name: AMP Customer 360
+description: |
+  Example flow that retrieves customer data and produces a summary.
+steps:
+  - id: fetch_customer
+    type: connector_call
+    connector: sql
+    operation: query
+    payload:
+      query: "SELECT * FROM customers WHERE customer_id = :customer_id"
+      params:
+        customer_id: 123
+  - id: fetch_policies
+    type: connector_call
+    connector: sql
+    operation: query
+    payload:
+      query: "SELECT * FROM policies WHERE customer_id = :customer_id"
+      params:
+        customer_id: 123
+  - id: summarise_customer
+    type: llm_call
+    space_id: customers
+    prompt: "Summarise the customer's profile and active policies."
+    top_k: 5

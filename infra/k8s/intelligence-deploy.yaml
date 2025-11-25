@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apex-intelligence
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apex-intelligence
+  template:
+    metadata:
+      labels:
+        app: apex-intelligence
+    spec:
+      containers:
+        - name: intelligence
+          image: apex-intelligence:latest
+          ports:
+            - containerPort: 8001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apex-intelligence
+spec:
+  type: ClusterIP
+  selector:
+    app: apex-intelligence
+  ports:
+    - port: 8001
+      targetPort: 8001

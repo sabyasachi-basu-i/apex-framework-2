@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apex-integration
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apex-integration
+  template:
+    metadata:
+      labels:
+        app: apex-integration
+    spec:
+      containers:
+        - name: integration
+          image: apex-integration:latest
+          ports:
+            - containerPort: 8002
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apex-integration
+spec:
+  type: ClusterIP
+  selector:
+    app: apex-integration
+  ports:
+    - port: 8002
+      targetPort: 8002

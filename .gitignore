@@ -1,0 +1,62 @@
+# Global
+.DS_Store
+Thumbs.db
+*.log
+logs/
+*.tmp
+.cache/
+.env
+.env.*
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+node_modules/
+.next/
+out/
+dist/
+build/
+coverage/
+*.egg-info/
+*.pyo
+*.pyd
+*.pkl
+
+# Editor directories
+.idea/
+.vscode/
+.history/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Docker
+docker-data/
+docker-volumes/
+.volumes/
+
+# SDK builds
+sdk/python/build/
+sdk/python/dist/
+sdk/python/*.egg-info/
+sdk/typescript/node_modules/
+sdk/typescript/dist/
+sdk/typescript/lib/
+sdk/typescript/.cache/
+
+# Console environment
+console/.env*
+console/.env.local
+console/.env.development.local
+console/.env.production.local
+console/.env.test.local
+console/.turbo/
+console/.eslintcache
+
+# Example runtimes
+examples/**/runs/
+examples/**/temp/
+
+# Generated docs
+docs/generated/

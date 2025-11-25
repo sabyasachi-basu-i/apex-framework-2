@@ -1,0 +1,29 @@
+# Enforce LF endings for all text files
+* text=auto eol=lf
+
+# Treat binary files properly
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.svg binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tar binary
+
+# Explicitly mark code files as text
+*.py text
+*.ts text
+*.tsx text
+*.js text
+*.jsx text
+*.json text
+*.yaml text
+*.yml text
+*.md text
+*.sh text
+
+# Improve diff for Jupyter notebooks
+*.ipynb linguist-language=Jupyter

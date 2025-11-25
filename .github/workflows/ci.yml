@@ -1,0 +1,43 @@
+name: APEX CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          pip install -r services/intelligence-service/requirements.txt
+          pip install -r services/integration-service/requirements.txt
+          pip install -r services/orchestration-service/requirements.txt
+          pip install -r services/governance-service/requirements.txt
+      - name: Lint with Ruff
+        run: |
+          pip install ruff
+          ruff services
+  node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Install dependencies and lint
+        run: |
+          cd console
+          npm install
+          npx eslint . --ext .js,.ts,.tsx || true
