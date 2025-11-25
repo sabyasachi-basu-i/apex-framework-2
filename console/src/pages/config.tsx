@@ -3,7 +3,7 @@ import { Layout } from '../components/Layout';
 import { PageHeader, SectionCard, APIError } from '../components/ui';
 import { apiFetch } from '../lib/api';
 
-const CONFIG_URL = '/config';
+const CONFIG_URL = '/api/config';
 
 export default function ConfigPage() {
   const [form, setForm] = useState({

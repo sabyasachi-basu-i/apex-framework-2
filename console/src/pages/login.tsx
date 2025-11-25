@@ -3,7 +3,7 @@ import { Layout } from '../components/Layout';
 import { PageHeader, SectionCard, APIError } from '../components/ui';
 import { apiFetch } from '../lib/api';
 
-const LOGIN_URL = '/auth/login';
+const LOGIN_URL = '/api/auth/login';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('admin@apex.local');

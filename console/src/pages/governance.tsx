@@ -3,7 +3,7 @@ import { Layout } from '../components/Layout';
 import { PageHeader, SectionCard, LoadingSkeleton, APIError } from '../components/ui';
 import { apiFetch } from '../lib/api';
 
-const GOV_BASE = '/governance';
+const GOV_BASE = '/api/governance';
 
 type Graph = { name: string; nodes: { id: string; label: string }[]; edges: { source: string; target: string }[] };
 
