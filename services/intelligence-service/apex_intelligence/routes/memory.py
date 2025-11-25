@@ -12,6 +12,7 @@ from apex_intelligence.models import (
     MemoryListResponse,
     MemorySearchResponse,
     MemoryEntry,
+    QueryResult,
 )
 from apex_intelligence.security import get_current_user
 
@@ -28,10 +29,12 @@ async def ingest_document(req: IngestRequest, _user: str = Depends(get_current_u
 @router.post("/query", response_model=QueryResponse)
 async def query_memory(req: QueryRequest, _user: str = Depends(get_current_user)) -> QueryResponse:
     results = await store.query(req.space_id, req.query, req.top_k)
-    return QueryResponse(results=[
-        MemoryEntry(id=r.id, content=r.content, space_id=r.space_id, metadata=r.metadata) if isinstance(r, MemoryEntry) else r
-        for r in results
-    ])
+    return QueryResponse(
+        results=[
+            QueryResult(doc_id=r["id"], score=r.get("score", 0.0), content=r["content"])
+            for r in results
+        ]
+    )
 
 
 @router.post("/add", response_model=MemoryEntry)
@@ -49,7 +52,18 @@ async def list_memory(space_id: str | None = None, _user: str = Depends(get_curr
 @router.get("/search", response_model=MemorySearchResponse)
 async def search_memory(q: str, space_id: str = "default", _user: str = Depends(get_current_user)) -> MemorySearchResponse:
     results = await store.query(space_id, q, 10)
-    return MemorySearchResponse(query=q, results=results)
+    return MemorySearchResponse(
+        query=q,
+        results=[
+            MemoryEntry(
+                id=r["id"],
+                content=r["content"],
+                space_id=r.get("space_id", space_id),
+                metadata=r.get("metadata"),
+            )
+            for r in results
+        ],
+    )
 
 
 @router.delete("/{doc_id}")

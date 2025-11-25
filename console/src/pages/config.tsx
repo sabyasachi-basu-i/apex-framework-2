@@ -9,8 +9,6 @@ export default function ConfigPage() {
   const [form, setForm] = useState({
     OPENAI_API_KEY: '',
     MODEL_NAME: 'gpt-4o-mini',
-    CHROMADB_HOST: 'http://localhost:8000',
-    CHROMADB_COLLECTION: 'apex-memory',
     TEMPERATURE: 0.2,
     MAX_RETRIES: 2,
   });
