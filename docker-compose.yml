@@ -33,6 +33,11 @@ services:
       - apex
     volumes:
       - config_data:/data
+    networks:
+      - apex
+
+
+
 
   intelligence:
     build: ./services/intelligence-service
