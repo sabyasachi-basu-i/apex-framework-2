@@ -6,3 +6,4 @@ httpx
 pyyaml
 loguru
 PyJWT
+chromadb

@@ -79,7 +79,5 @@ class MemorySearchResponse(BaseModel):
 class ConfigResponse(BaseModel):
     OPENAI_API_KEY: str = ""
     MODEL_NAME: str = ""
-    CHROMADB_HOST: str = ""
-    CHROMADB_COLLECTION: str = ""
     TEMPERATURE: float = 0.0
     MAX_RETRIES: int = 0
