@@ -13,6 +13,9 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "MODEL_NAME": "gpt-4o-mini",
     "TEMPERATURE": 0.2,
     "MAX_RETRIES": 2,
+    # Service URLs (allow override via environment at boot time)
+    "intelligence_url": os.getenv("INTELLIGENCE_URL", "http://localhost:8001"),
+    "integration_url": os.getenv("INTEGRATION_URL", "http://localhost:8002"),
 }
 
 
@@ -21,6 +24,8 @@ class RuntimeConfig(BaseModel):
     MODEL_NAME: str = Field(default="gpt-4o-mini")
     TEMPERATURE: float = Field(default=0.2)
     MAX_RETRIES: int = Field(default=2)
+    intelligence_url: str = Field(default="http://localhost:8001")
+    integration_url: str = Field(default="http://localhost:8002")
 
 
 CONFIG_PATH = Path(os.getenv("CONFIG_PATH", "/data/config.json"))
