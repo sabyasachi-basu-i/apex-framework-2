@@ -3,7 +3,7 @@ import { Layout } from '../components/Layout';
 import { PageHeader, SectionCard, DataTable, LoadingSkeleton, APIError } from '../components/ui';
 import { apiFetch } from '../lib/api';
 
-const MEMORY_BASE = '/memory';
+const MEMORY_BASE = '/api/memory';
 
 type MemoryEntry = { id: string; content: string; space_id: string };
 
